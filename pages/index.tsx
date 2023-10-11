@@ -5,9 +5,12 @@ import Link from "next/link";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
 import { useRouter } from "next/router";
-import { sanityClient, urlFor } from "../sanity";
+import { client } from "../sanity/lib/client";
+import { urlForImage } from "../sanity/lib/image";
+
 import { Post } from "../typing";
 import { Tooltip } from "react-tippy";
+import { Footer } from "../components/Footer";
 interface Props {
   posts: [Post];
 }
@@ -15,6 +18,7 @@ interface Props {
 export default function Home({ posts }: Props) {
   const { ref: myRef, inView: myelemisvisible } = useInView();
   const router = useRouter();
+
   return (
     <div className=" overflow-x-hidden">
       <Head>
@@ -28,64 +32,322 @@ export default function Home({ posts }: Props) {
       <div className="mb-28">
         <div
           ref={myRef}
-          className="wrapper translate-x-[0] opacity-1 duration-500 mt-28 grid font-poppins grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 p-2 lg:p-6"
+          className="wrapper p-2 lg:p-6"
         >
-          {posts.map((post) => (
-            <Link passHref key={post._id} href={`/post/${post.slug.current}`}>
-              <div
-                className={`${
-                  myelemisvisible
-                    ? "group translate-x-[0] opacity-1 duration-500  border rounded-lg shadow-md cursor-pointer overflow-hidden"
-                    : "group translate-x-[100px] opacity-0 duration-500 border rounded-lg shadow-md cursor-pointer overflow-hidden"
-                }`}
-              >
-                <img
-                  className=" w-full h-60 object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
-                  src={urlFor(post && post.mainImage).url()!}
-                  alt="image"
-                />
-                <div className="flex justify-between p-5  bg-white">
-                  <div>
-                    <p className="text-lg font-bold">{post.title}</p>
-                    <p className="text-sm">
-                      {post.description} by{" "}
-                      <span className="font-medium uppercase">
-                        {post.author.name}
-                      </span>
-                    </p>
+          <section className="relative isolate mx-auto w-full py-12 max-w-screen-xl pt-0">
+            <div className="mx-auto grid grid-cols-[repeat(auto-fill,_minmax(305px,1fr))] place-items-center gap-x-4 gap-y-7 px-4 sm:gap-y-6 sm:px-8">      {posts.map((post) => (
+              <PostCard2 post={post}></PostCard2>
+              /*   <Link passHref key={post._id} href={`/post/${post.slug.current}`}>
+                  {console.log('post.author.image', post.author.image)}
+                  <div
+                    className={`${
+                      myelemisvisible
+                        ? "group translate-x-[0] opacity-1 duration-500  border rounded-lg shadow-md cursor-pointer overflow-hidden"
+                        : "group translate-x-[100px] opacity-0 duration-500 border rounded-lg shadow-md cursor-pointer overflow-hidden"
+                    }`}
+                  >
+                    <img
+                      className=" w-full h-60 object-cover group-hover:scale-105 transition-transform duration-200 ease-in-out"
+                      src={post && post.mainImage && urlForImage(post.mainImage).url()}
+                      alt="image"
+                    />
+                    <div className="flex justify-between p-5  bg-white">
+                      <div>
+                        <p className="text-lg font-bold">{post.title}</p>
+                        <p className="text-sm">
+                          {post.description} by{" "}
+                          <span className="font-medium uppercase">
+                            {post.author.name}
+                          </span>
+                        </p>
+                      </div>
+                      <img
+                        className="h-12 ml-6 rounded-full"
+                        src={post && post.author.image && urlForImage(post && post.author.image).url()}
+                        alt=""
+                      />
+                    </div>
                   </div>
-                  <img
-                    className="h-12 ml-6 rounded-full"
-                    src={urlFor(post && post.author.image).url()!}
-                    alt=""
-                  />
-                </div>
-              </div>
-            </Link>
-          ))}
+                </Link> */
+            ))}
+            </div>
+          </section>
+
+
         </div>
       </div>
       {/* bottom section */}
-      <div className="w-full   z-50 block sm:hidden px-[30px] py-[20px] fixed bg-gray-100 shadow-md bottom-0">
-        <div className="flex justify-between">
-          <Link href="/">
-            <div>{router.pathname === "/" ? <Homee /> : <HomePhone />}</div>
-          </Link>
-          {/* <Home /> */}
-          <Link href="/SearchCo">
-            <div>
-              <Search />
-            </div>
-          </Link>
-          <div>
-            <Readinglist />
-          </div>
-        </div>
-      </div>
+      <Footer/>
       {/* bottom section */}
     </div>
   );
 }
+
+const PostCard2 = ({ post }) => {
+  return (
+    <a
+      className="group relative grid aspect-square h-full w-full min-w-[297px] grid-rows-[1fr_64px] gap-3 overflow-hidden rounded-lg sm:grid-rows-[259px_64px]"
+      href={`/post/${post.slug.current}`}>
+      <div className="relative h-full w-full overflow-hidden">
+        <div className="scrollbar-hide pointer-events-auto relative inset-0 flex snap-x snap-mandatory overflow-x-auto w-full rounded-lg object-cover h-full">
+          <img
+            src={post && post.mainImage && urlForImage(post.mainImage).url()}
+            className="h-full w-full flex-none snap-center snap-always overflow-hidden object-cover"
+            alt="Wander Big Sur Coast"
+            width={297}
+            height={259}
+          />
+          <div className="deal">
+
+            <div className="right">
+              <div className="prices price-display">
+                <p className="deal-price-old">
+                  <span className="price-container hotel-price">{post.priceRange.high}</span>
+                </p>
+                <p className="deal-price-new">
+                  <span className="price-container hotel-price">{post.price}€</span>
+                </p>
+              </div>
+              <div className="skip-rate-label">Tarif Travel.so</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex max-w-[84px] items-center absolute bottom-0 left-1/2 z-40 -translate-x-1/2">
+          <div className="flex w-full items-center overflow-x-hidden">
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              className="flex-none"
+              style={{
+                margin: 3,
+                width: 6,
+                height: 6,
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: 3,
+                opacity: 1
+              }}
+            />
+            <div
+              className="flex-none"
+              style={{
+                margin: 3,
+                width: 6,
+                height: 6,
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: 3,
+                opacity: "0.2"
+              }}
+            />
+            <div
+              className="flex-none"
+              style={{
+                margin: 3,
+                width: 6,
+                height: 6,
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: 3,
+                opacity: "0.2"
+              }}
+            />
+            <div
+              className="flex-none"
+              style={{
+                margin: 3,
+                width: 5,
+                height: 5,
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: "2.5px",
+                opacity: "0.2"
+              }}
+            />
+            <div
+              className="flex-none"
+              style={{
+                margin: 3,
+                width: 4,
+                height: 4,
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: 2,
+                opacity: "0.2"
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+            <div
+              style={{
+                backgroundColor: "black",
+                opacity: 0,
+                width: 3,
+                height: 3,
+                margin: 3
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex h-full flex-col justify-around">
+        <div className="text-property-eyebrow text-black/60">
+          <span className="bg-green-100 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 text-white">New</span>
+
+        </div>
+        <div className="mb-0.5 font-medium">{post.title}</div>
+        <div className="flex items-center gap-2">
+          <div className="text-5-v-light-grey border-3-primary-grey leading-xxs flex h-full items-center border-r text-[13px] group-hover:text-black">
+            <span className="whitespace-nowrap pr-2">
+              à partir de {post.price}€
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-1">
+            <span className=" text-gray-800 text-xs font-medium inline-flex items-center px-2.5  rounded mr-2 border border-gray-500">
+                      <svg
+                        className="w-2.5 h-2.5 mr-1.5"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                      </svg>
+                      Il y a 3 heures
+                    </span>
+            </div>
+
+
+          </div>
+
+        </div>
+      </div>
+    </a>
+  )
+}
+
+const PostCard = ({ post }) => {
+  return (
+    <a
+      className="group relative grid aspect-square h-full w-full min-w-[297px] grid-rows-[1fr_64px] gap-3 overflow-hidden rounded-lg sm:grid-rows-[259px_64px]"
+      href={`/post/${post.slug.current}`}
+    >
+      <div className="relative h-full w-full overflow-hidden">
+        <div className="scrollbar-hide pointer-events-auto relative inset-0 flex snap-x snap-mandatory overflow-x-auto w-full rounded-lg object-cover h-full">
+
+          <img
+            src={post && post.mainImage && urlForImage(post.mainImage).url()}
+            className="h-full w-full flex-none snap-center snap-always overflow-hidden object-cover"
+            alt={post.title}
+            width={297}
+            height={259}
+            loading="eager"
+          />
+
+        </div>
+        {/* Additional UI components can be added here as per the original JSX */}
+      </div>
+      <div className="flex h-full flex-col justify-around">
+        <div className="text-property-eyebrow text-black/60">
+          {/* Location data could be added here */}
+        </div>
+        <div className="mb-0.5 font-medium">{post.title}</div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-1">
+              {/* SVG icons and additional data could be added here */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  );
+};
+
+
 export async function getStaticProps() {
   const query = `
   *[_type=="post"]{
@@ -99,9 +361,19 @@ export async function getStaticProps() {
   
   description,
   mainImage,
-  slug
+  slug,
+  price,
+  priceRange
   }`;
-  const posts = await sanityClient.fetch(query);
+  //const query = `[_type == 'post']`
+  const posts = await client.fetch<Post[]>(query,
+    {
+      next: {
+        revalidate: 3600 // look for updates to revalidate cache every hour
+      }
+    }
+  );
+  console.log('posts', posts)
   if (!posts) {
     return {
       notFound: true,

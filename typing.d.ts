@@ -10,7 +10,12 @@ export interface Post {
     bio: string;
   };
   comments: Comment[];
-
+  departures: City[];
+  pointsForts: string[];
+  href: string,
+  destination: City[];
+  priceRange: {low: number, high: number}
+  link: string,
   description: string;
 
   mainImage: {
@@ -27,6 +32,13 @@ export interface Post {
     current: string;
   };
   body: [object];
+  price: string;
+  smallDescription: string;
+}
+
+interface City {
+  title: string;
+  description: string;
 }
 
 export interface Comment {
